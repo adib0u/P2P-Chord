@@ -1,21 +1,20 @@
 # Script creating a peer and joining a network
-import socket
+import socket as ss
 
 # Récupération de l'ip de la machine actuel
-ipClient = socket.gethostbyname(socket.gethostname())
+ipClient = ss.gethostbyname(ss.gethostname())
 print(ipClient)
 
 # demande de hash au HashServer
-sock = socket()
+
 print("Saisir ip du serveur de hash")
 ipHashServeur = input()
-sock.connect( ipHashServeur, 8001 )
-sock.send( ipClient )
-hashClient = sock.recv( 4096 )
+
+sock = ss.socket()
+sock.connect( (ipHashServeur, 8001) )
+sock.send( str.encode(ipClient + "\n") )
+hashClient = sock.recv( 1024 ).decode()
+
 sock.close()
 
 print(hashClient)
-
-
-
-
