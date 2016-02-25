@@ -22,6 +22,10 @@ class Peer :
 	def getRoute(self, hash) :
 		return hash, self.routing[hash]
 
+	def getAllRoutes(self) :
+		for key, values in routing.iteritems() :
+			return key, values
+
 
 	def addRoute(self,hash, hashSucc, ipSucc) :
 		""" Méthode qui permet d'ajouter une route à la table de routage
