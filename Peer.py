@@ -58,7 +58,7 @@ class Peer :
 			sock.send(str.encode(self.hash + "\n"))
 			# Le pair demande son successeur
 			sock.send( str.encode(REQUEST_SUCC + "\n") )
-			pred_hash, pred_ip = sock.recv(1024).decode().split("\t")
+			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 
 
 	def run(self) :
