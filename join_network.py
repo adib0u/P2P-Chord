@@ -38,9 +38,11 @@ sock.close()
 
 print(welcomeAnswer)
 
-if welcomeAnswer == "yaf" :
+if welcomeAnswer == "yaf\n" :
 	peer1.enterNetwork()
 else :
 	peer1.enterNetwork(welcomeAnswer)
 
 print("> Pair ajouté au réseau")
+
+
