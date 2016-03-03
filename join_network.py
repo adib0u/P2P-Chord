@@ -37,4 +37,10 @@ welcomeAnswer = sock.recv(1024).decode()
 sock.close()
 
 print(welcomeAnswer)
+
+if welcomeAnswer == "yaf" :
+	peer1.enterNetwork()
+else :
+	peer1.enterNetwork(welcomeAnswer)
+
 print("> Pair ajouté au réseau")

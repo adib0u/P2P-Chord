@@ -49,22 +49,22 @@ class Peer :
 	def enterNetwork(self, partner = "0.0.0.0") :
 		""" Permet d'ajouter un pair dans le réseau """
 		if partner == "0.0.0.0" :
-			addRoute(self.hash, self.hash, self.ip)
+			self.addRoute(self.hash, self.hash, self.ip)
 
 		else :
 			sock = ss.socket()
-			sock.connect( (partner, PORT) )
+			sock.connect( (partner, Peer.PORT) )
 			# Le pair envoie son hash
 			sock.send(str.encode(self.hash + "\n"))
 			# Le pair demande son successeur
-			sock.send( str.encode(REQUEST_SUCC + "\n") )
+			sock.send( str.encode(Peer.REQUEST_SUCC + "\n") )
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 
 
 	def run(self) :
 		""" Permet d'écouter et traiter les requètes """
 		sock = ss.socket()
-		sock.bind( ('', PORT) )
+		sock.bind( ('', Peer.PORT) )
 		sock.listen(1)
 		while True :
 			conn, addr = sock.accept()
@@ -73,7 +73,7 @@ class Peer :
 			# On reçoit la requète
 			request = sock.recv(1024)
 
-			if request == REQUEST_SUCC :
+			if request == Peer.REQUEST_SUCC :
 				self.whoAreMyNeighbors(idPair, sock)
 
 			sock.close()
@@ -90,9 +90,9 @@ class Peer :
 			))
 		else :
 			sock2 = ss.socket()
-			sock2.connect( (self.getSuccesseur()[1], PORT) )
+			sock2.connect( (self.getSuccesseur()[1], Peer.PORT) )
 			sock2.send(str.encode(hashPeer + "\n"))
-			sock2.send( str.encode(REQUEST_SUCC + "\n") )
+			sock2.send( str.encode(Peer.REQUEST_SUCC + "\n") )
 			predecessor = sock.recv(1024).decode()
 			sock2.close()
 			sock.send(str.encode(predecessor + "\n"))
