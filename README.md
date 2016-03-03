@@ -8,10 +8,11 @@
 
 ## Script : rejoindre un réseau
 
-1. récupérer l'IP
-2. demander le hach au hashServeur
-3. créer le Pair
-4. Demander le point d'entrée à WelcomeServeur
-5. Ajouter le pair au réseau :
+1. récupérer l'IP OK 
+2. demander le hach au hashServeur OK 
+3. créer le Pair OK
+4. Demander le point d'entrée à WelcomeServeur OK 
+5. Récupérer successeur et prédécesseur depuis le point d'entrée OK
+6. Ajouter le pair au réseau : 
     - mettre à jour sa table de routage
     - mettre à jour celle de son prédesceceur et de son sucesseur

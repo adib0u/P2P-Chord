@@ -45,4 +45,6 @@ else :
 
 print("> Pair ajouté au réseau")
 
+peer1.run()
+
 
