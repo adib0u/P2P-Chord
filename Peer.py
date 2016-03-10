@@ -8,10 +8,8 @@ class Peer :
 	PORT = 4711
 
 	REQUEST_SUCC = "Qui est mon successeur ?"
-	REQUEST_ROUTES = "Donne moi tes routes"
+	REQUEST_ROUTES = "rt?"
 	REQUEST_UPDATE_SUCC = "Je suis ton nouveau successeur"
-
-	RESPONSE_YES = "Yes"
 
 	def __init__(self, ip, hash) :
 		""" Constructeur de la classe Peer
@@ -98,6 +96,9 @@ class Peer :
 
 			elif request == Peer.REQUEST_UPDATE_SUCC :
 				self.addRoute(self.hash, idPair, addr)
+
+			elif request == Peer.REQUEST_ROUTES :
+				self.sendRoutes(conn)
 			
 			print("> requête " + request + " traitée\n")
 
@@ -127,5 +128,13 @@ class Peer :
 			predecessor = conn.recv(1024).decode()
 			sock2.close()
 			conn.sendall(str.encode(predecessor + "\n"))
+
+	def sendRoutes(self, conn) :
+		routes = ""
+		for k in self.routing :
+			routes += k + ":" + self.routing[k][0] + ":" + self.routing[k][1] + "\n"
+		routes += "end"
+		conn.sendall(str.encode(routes + "\n"))
+
 
 
