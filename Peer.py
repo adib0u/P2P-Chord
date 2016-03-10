@@ -55,12 +55,12 @@ class Peer :
 		else :
 			sock = ss.socket()
 			sock.connect( (partner, Peer.PORT) )
-			# Le pair envoie son hash
-			sock.sendall(str.encode(self.hash + "\n"))
-			print("> envoi id")
-			# Le pair demande son successeur
-			sock.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
-			print("> envoi requête : " + Peer.REQUEST_SUCC)
+			# Le pair envoie son hash et demande son successeur
+			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_SUCC + "\n"))
+				# print("> envoi id")
+				# Le pair demande son successeur
+				# sock.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
+			print("> envoi id + requête : " + Peer.REQUEST_SUCC)
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 			print("> réponse reçue")
 			print("- " + pred_hash)
@@ -74,8 +74,8 @@ class Peer :
 			# Il informe son prédécesseur qu'il est son nouveau successeur
 			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
-			sock.sendall(str.encode(self.hash + "\n"))
-			sock.sendall( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
+			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_UPDATE_SUCC + "\n"))
+				# sock.sendall( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
 			sock.close()
 			print("> prédécesseur notifié ")
 
@@ -88,10 +88,8 @@ class Peer :
 		while True :
 			conn, addr = sock.accept()
 			print("> Connexion établie")
-			# On reçoit l'identifiant du pair concerné
-			idPair = conn.recv(1024).decode().rstrip()
-			# On reçoit la requète
-			request = conn.recv(1024).decode().rstrip()
+			# On reçoit l'identifiant du pair concerné et sa requête
+			idPair, request = conn.recv(1024).decode().rstrip().split("\t")
 
 			print("> requête de " + idPair + " à traiter : " + request)
 
@@ -119,8 +117,9 @@ class Peer :
 		else :
 			sock2 = ss.socket()
 			sock2.connect( (self.getSuccesseur()[1], Peer.PORT) )
-			sock2.sendall(str.encode(hashPeer + "\n"))
-			sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
+			sock2.sendall(str.encode(hashPeer + "\t" + Peer.REQUEST_SUCC + "\n"))
+				#sock2.sendall(str.encode(hashPeer + "\n"))
+				#sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			predecessor = conn.recv(1024).decode()
 			sock2.close()
 			conn.sendall(str.encode(predecessor + "\n"))
