@@ -100,13 +100,14 @@ class Peer :
 			elif request == Peer.REQUEST_UPDATE_SUCC :
 				self.addRoute(self.hash, idPair, addr)
 			
-			print("> requête " + request + "traitée")
+			print("> requête " + request + " traitée\n")
 
 		sock.close()
 
 
 	def whoAreMyNeighbors(self, hashPeer, conn) :
 		""" """
+		print( self.hash + " < " + hashPeer + " and " + self.getSuccesseur()[0] + " > " + hashPeer )
 		if (self.hash < hashPeer and self.getSuccesseur()[0] > hashPeer) or self.hash == self.getSuccesseur()[0] :
 			conn.send(str.encode(
 				self.hash + "\t" + 
