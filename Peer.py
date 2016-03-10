@@ -61,6 +61,7 @@ class Peer :
 			sock.send( str.encode(Peer.REQUEST_SUCC + "\n") )
 			print("> envoi requête")
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
+			print("> réponse reçue")
 			sock.close()
 
 
@@ -81,6 +82,7 @@ class Peer :
 
 			if request == Peer.REQUEST_SUCC :
 				self.whoAreMyNeighbors(idPair, sock)
+				print("> requête " + request + "traitée")
 
 		sock.close()
 
