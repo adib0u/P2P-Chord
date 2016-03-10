@@ -62,6 +62,10 @@ class Peer :
 			print("> envoi requête")
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 			print("> réponse reçue")
+			print("- " + pred_hash)
+			print("- " + pred_ip)
+			print("- " + succ_hash)
+			print("- " + succ_ip )
 			sock.close()
 
 
