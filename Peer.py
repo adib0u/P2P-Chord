@@ -74,6 +74,7 @@ class Peer :
 			# Il informe son prédécesseur qu'il est son nouveau successeur
 			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
+			sock.send(str.encode(self.hash + "\n"))
 			sock.send( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
 			sock.close()
 			print("> prédécesseur notifié ")
