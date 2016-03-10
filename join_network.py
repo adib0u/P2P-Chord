@@ -1,6 +1,7 @@
 # Script creating a peer and joining a network
 
 import socket as ss
+import _thread as th
 from Peer import Peer
 
 # Récupération de l'ip de la machine actuel
@@ -45,4 +46,11 @@ else :
 
 print("> Pair ajouté au réseau")
 
-peer1.run()
+# on donne la main au pair
+try:
+   thread.start_new_thread( peer1.run() )
+except:
+   print("Erreur: impossible de démarer le thread")
+
+while 1:
+   pass
