@@ -82,7 +82,7 @@ class Peer :
 			if request == Peer.REQUEST_SUCC :
 				self.whoAreMyNeighbors(idPair, sock)
 
-			sock.close()
+		sock.close()
 
 
 	def whoAreMyNeighbors(self, hashPeer, sock) :
