@@ -87,7 +87,10 @@ class Peer :
 			conn, addr = sock.accept()
 			print("> Connexion établie")
 			# On reçoit l'identifiant du pair concerné et sa requête
-			idPair, request = conn.recv(1024).decode().rstrip().split("\t")
+			request = conn.recv(1024).decode().rstrip()
+			
+			if "\t" in request :
+				idPair, request = conn.recv(1024).decode().rstrip().split("\t")
 
 			print("> requête de " + idPair + " à traiter : " + request)
 
