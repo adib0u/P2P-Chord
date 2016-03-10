@@ -72,6 +72,7 @@ class Peer :
 			self.addRoute(self.hash, succ_hash, succ_ip)
 			print("> successeur ajouté")
 			# Il informe son prédécesseur qu'il est son nouveau successeur
+			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
 			sock.send( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
 			sock.close()
