@@ -1,11 +1,11 @@
 # Classe Peer
 
 import socket as ss
-
+import time
 
 class Peer :
 
-	PORT = 9000
+	PORT = 4711
 
 	REQUEST_SUCC = "Qui est mon successeur ?"
 	REQUEST_ROUTES = "Donne moi tes routes"
@@ -56,8 +56,10 @@ class Peer :
 			sock.connect( (partner, Peer.PORT) )
 			# Le pair envoie son hash
 			sock.send(str.encode(self.hash + "\n"))
+			print("> envoi id")
 			# Le pair demande son successeur
 			sock.send( str.encode(Peer.REQUEST_SUCC + "\n") )
+			print("> envoi requête")
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 
 
