@@ -56,10 +56,10 @@ class Peer :
 			sock = ss.socket()
 			sock.connect( (partner, Peer.PORT) )
 			# Le pair envoie son hash
-			sock.send(str.encode(self.hash + "\n"))
+			sock.sendall(str.encode(self.hash + "\n"))
 			print("> envoi id")
 			# Le pair demande son successeur
-			sock.send( str.encode(Peer.REQUEST_SUCC + "\n") )
+			sock.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			print("> envoi requête : " + Peer.REQUEST_SUCC)
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 			print("> réponse reçue")
@@ -74,8 +74,8 @@ class Peer :
 			# Il informe son prédécesseur qu'il est son nouveau successeur
 			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
-			sock.send(str.encode(self.hash + "\n"))
-			sock.send( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
+			sock.sendall(str.encode(self.hash + "\n"))
+			sock.sendall( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
 			sock.close()
 			print("> prédécesseur notifié ")
 
@@ -110,7 +110,7 @@ class Peer :
 		""" """
 		print( self.hash + " < " + hashPeer + " and " + self.getSuccesseur()[0] + " > " + hashPeer )
 		if (self.hash < hashPeer and self.getSuccesseur()[0] > hashPeer) or self.hash == self.getSuccesseur()[0] :
-			conn.send(str.encode(
+			conn.sendall(str.encode(
 				self.hash + "\t" + 
 				self.ip + "\t" + 
 				self.getSuccesseur()[0] + "\t" + 
@@ -119,10 +119,10 @@ class Peer :
 		else :
 			sock2 = ss.socket()
 			sock2.connect( (self.getSuccesseur()[1], Peer.PORT) )
-			sock2.send(str.encode(hashPeer + "\n"))
-			sock2.send( str.encode(Peer.REQUEST_SUCC + "\n") )
+			sock2.sendall(str.encode(hashPeer + "\n"))
+			sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			predecessor = conn.recv(1024).decode()
 			sock2.close()
-			conn.send(str.encode(predecessor + "\n"))
+			conn.sendall(str.encode(predecessor + "\n"))
 
 
