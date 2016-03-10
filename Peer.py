@@ -74,25 +74,25 @@ class Peer :
 			conn, addr = sock.accept()
 			print("> Connexion établie")
 			# On reçoit l'identifiant du pair concerné
-			idPair = conn.recv(1024).decode()
+			idPair = conn.recv(1024).decode().rstrip()
 			# On reçoit la requète
-			request = conn.recv(1024).decode()
+			request = conn.recv(1024).decode().rstrip()
 
 			print("> requête à traiter : " + request)
 
-			if request == Peer.REQUEST_SUCC :
+			if request == Peer.REQUEST_SUCC:
 				print("> je prend le if")
-				self.whoAreMyNeighbors(idPair, sock)
+				self.whoAreMyNeighbors(idPair, conn)
 			
 			print("> requête " + request + "traitée")
 
 		sock.close()
 
 
-	def whoAreMyNeighbors(self, hashPeer, sock) :
+	def whoAreMyNeighbors(self, hashPeer, conn) :
 		""" """
-		if self.hash < hashPeer and self.getSuccesseur() > hashPeer :
-			sock.send(str.encode(
+		if (self.hash < hashPeer and self.getSuccesseur()[0] > hashPeer) or self.hash == self.getSuccesseur()[0] :
+			conn.send(str.encode(
 				self.hash + "\t" + 
 				self.ip + "\t" + 
 				self.getSuccesseur()[0] + "\t" + 
@@ -103,8 +103,8 @@ class Peer :
 			sock2.connect( (self.getSuccesseur()[1], Peer.PORT) )
 			sock2.send(str.encode(hashPeer + "\n"))
 			sock2.send( str.encode(Peer.REQUEST_SUCC + "\n") )
-			predecessor = sock.recv(1024).decode()
+			predecessor = conn.recv(1024).decode()
 			sock2.close()
-			sock.send(str.encode(predecessor + "\n"))
+			conn.send(str.encode(predecessor + "\n"))
 
 
