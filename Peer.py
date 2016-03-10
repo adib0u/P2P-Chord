@@ -9,6 +9,7 @@ class Peer :
 
 	REQUEST_SUCC = "Qui est mon successeur ?"
 	REQUEST_ROUTES = "Donne moi tes routes"
+	REQUEST_UPDATE_SUCC = "Je suis ton nouveau successeur"
 
 	RESPONSE_YES = "Yes"
 
@@ -42,7 +43,7 @@ class Peer :
 	#-----------------------------------------------------------------------------------------------
 
 	def addRoute(self, hash, hashSucc, ipSucc) :
-		""" Permet d'ajouter une route à la table de routage
+		""" Permet d'ajouter ou remplacer une route dans la table de routage
 			Route = hash:hash du successeur:ip du successeur """
 		self.routing[hash] = (hashSucc, ipSucc)
 
@@ -59,7 +60,7 @@ class Peer :
 			print("> envoi id")
 			# Le pair demande son successeur
 			sock.send( str.encode(Peer.REQUEST_SUCC + "\n") )
-			print("> envoi requête")
+			print("> envoi requête : " + Peer.REQUEST_SUCC)
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
 			print("> réponse reçue")
 			print("- " + pred_hash)
@@ -67,6 +68,14 @@ class Peer :
 			print("- " + succ_hash)
 			print("- " + succ_ip )
 			sock.close()
+			# Il ajoute la route vers son successeur
+			self.addRoute(self.hash, succ_hash, succ_ip)
+			print("> successeur ajouté")
+			# Il informe son prédécesseur qu'il est son nouveau successeur
+			sock.connect( (pred_ip, Peer.PORT) )
+			sock.send( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
+			sock.close()
+			print("> prédécesseur notifié ")
 
 
 	def run(self) :
@@ -85,8 +94,10 @@ class Peer :
 			print("> requête à traiter : " + request)
 
 			if request == Peer.REQUEST_SUCC:
-				print("> je prend le if")
 				self.whoAreMyNeighbors(idPair, conn)
+
+			elif request == Peer.REQUEST_UPDATE_SUCC :
+				self.addRoute(self.hash, idPair, addr)
 			
 			print("> requête " + request + "traitée")
 
