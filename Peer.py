@@ -120,7 +120,7 @@ class Peer :
 			))
 		else :
 			sock2 = ss.socket()
-			sock2.connect( (self.getSuccesseur()[1], Peer.PORT) )
+			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT) )
 			sock2.sendall(str.encode(hashPeer + "\t" + Peer.REQUEST_SUCC + "\n"))
 				#sock2.sendall(str.encode(hashPeer + "\n"))
 				#sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
