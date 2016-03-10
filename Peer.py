@@ -88,11 +88,10 @@ class Peer :
 			print("> Connexion établie")
 			# On reçoit l'identifiant du pair concerné et sa requête
 			request = conn.recv(1024).decode().rstrip()
-			
+
 			if "\t" in request :
 				idPair, request = conn.recv(1024).decode().rstrip().split("\t")
-
-			print("> requête de " + idPair + " à traiter : " + request)
+				print("> requête de " + idPair + " à traiter : " + request)
 
 			if request == Peer.REQUEST_SUCC:
 				self.whoAreMyNeighbors(idPair, conn)
