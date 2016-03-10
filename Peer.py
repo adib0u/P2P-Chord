@@ -97,7 +97,7 @@ class Peer :
 				self.whoAreMyNeighbors(idPair, conn)
 
 			elif request == Peer.REQUEST_UPDATE_SUCC :
-				self.addRoute(self.hash, idPair, addr)
+				self.addRoute(self.hash, idPair, addr[0])
 
 			elif request == Peer.REQUEST_ROUTES :
 				self.sendRoutes(conn)
