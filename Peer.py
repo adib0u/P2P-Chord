@@ -81,8 +81,10 @@ class Peer :
 			print("> requête à traiter : " + request)
 
 			if request == Peer.REQUEST_SUCC :
+				print("> je prend le if")
 				self.whoAreMyNeighbors(idPair, sock)
-				print("> requête " + request + "traitée")
+			
+			print("> requête " + request + "traitée")
 
 		sock.close()
 
