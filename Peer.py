@@ -107,7 +107,9 @@ class Peer :
 	def whoAreMyNeighbors(self, hashPeer, conn) :
 		""" """
 		print( self.hash + " < " + hashPeer + " and " + self.getSuccesseur()[0] + " > " + hashPeer )
-		if (self.hash < hashPeer and self.getSuccesseur()[0] > hashPeer) or self.hash == self.getSuccesseur()[0] :
+		if ((self.hash < hashPeer and self.getSuccesseur()[0] > hashPeer )
+		 or (self.hash < hashPeer and self.getSuccesseur()[0] < self.hash) 
+		 or (self.hash == self.getSuccesseur()[0])) :
 			conn.sendall(str.encode(
 				self.hash + "\t" + 
 				self.ip + "\t" + 
