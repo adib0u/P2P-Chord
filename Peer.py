@@ -93,7 +93,7 @@ class Peer :
 			# On reçoit la requète
 			request = conn.recv(1024).decode().rstrip()
 
-			print("> requête à traiter : " + request)
+			print("> requête de " + idPair + " à traiter : " + request)
 
 			if request == Peer.REQUEST_SUCC:
 				self.whoAreMyNeighbors(idPair, conn)
