@@ -90,7 +90,7 @@ class Peer :
 			request = conn.recv(1024).decode().rstrip()
 
 			if "\t" in request :
-				idPair, request = conn.recv(1024).decode().rstrip().split("\t")
+				idPair, request = request.split("\t")
 				print("> requête de " + idPair + " à traiter : " + request)
 
 			if request == Peer.REQUEST_SUCC:
