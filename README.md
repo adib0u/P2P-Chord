@@ -17,7 +17,9 @@
     - mettre à jour sa table de routage
     - mettre à jour celle de son prédesceceur et de son sucesseur
 
-## Evolution du travail 
+## Travail à faire  
 
 1. Communication avec le Monitor Serveur
-2. 
+2. Table de routage plsu évolués comprenant plusieurs successeurs
+3. Communication entre les pairs 
+4. 
