@@ -16,3 +16,8 @@
 6. Ajouter le pair au réseau : 
     - mettre à jour sa table de routage
     - mettre à jour celle de son prédesceceur et de son sucesseur
+
+## Evolution du travail 
+
+1. Communication avec le Monitor Serveur
+2. 
