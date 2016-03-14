@@ -17,7 +17,7 @@ class Peer (th.Thread) :
 		""" Constructeur de la classe Peer
 			Prend en paramètres une ip et le hash associé à cette ip 
 		"""
-		threading.Thread.__init__(self)
+		th.Thread.__init__(self)
 		self.ip = ip
 		self.hash = hash
 		self.routing = {} # Dictionnaire qui correspond à la table de routage
