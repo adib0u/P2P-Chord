@@ -138,6 +138,7 @@ class Peer :
 		for k in self.routing :
 			routes += k + ":" + str(self.routing[k][0]) + ":" + str(self.routing[k][1]) + "\n"
 		routes += "end"
+		print (routes)
 		conn.sendall(str.encode(routes + "\n"))
 
 
