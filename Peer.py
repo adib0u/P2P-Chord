@@ -58,7 +58,7 @@ class Peer :
 				# Le pair demande son successeur
 				# sock.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			print("> envoi id + requête : " + Peer.REQUEST_SUCC)
-			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().split("\t")
+			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().rstrip().split("\t")
 			print("> réponse reçue")
 			print("- " + pred_hash)
 			print("- " + pred_ip)
