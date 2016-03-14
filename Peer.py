@@ -108,7 +108,7 @@ class Peer (th.Thread) :
 				self.sendRoutes(conn)
 
 			elif request == Peer.DATA_MSG :
-				self.receiveMsg(pair, params[0], params[1])
+				self.receiveMsg(idPair, params[0], params[1])
 			
 			print("> requête " + request + " traitée\n")
 
@@ -157,9 +157,9 @@ class Peer (th.Thread) :
 		if dest == self.hash:
 			print("> msg from " + exp + " : " + msg)
 
-		elif ((self.hash < hashPeer and hashSucc > hashPeer )
-		 or (hashSucc < self.hash and (hashPeer > self.hash or hashPeer < hashSucc)) 
-		 or (self.hash == hashSucc)):
+		elif ((self.hash < dest and self.getSuccesseur()[0] > dest )
+		 or (self.getSuccesseur()[0] < self.hash and (dest > self.hash or dest < self.getSuccesseur()[0])) 
+		 or (self.hash == self.getSuccesseur()[0])):
 			print("> msg destroyed")
 
 		else:
