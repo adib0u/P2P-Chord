@@ -19,7 +19,7 @@
 
 ## Travail à faire  
 
-1. Communication avec le Monitor Serveur
+1. Communication avec le Monitor Serveur OK
 2. Table de routage plsu évolués comprenant plusieurs successeurs
 3. Communication entre les pairs 
-4. 
+4. Mise en place du multi threading avec le module threading
