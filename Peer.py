@@ -1,9 +1,9 @@
 # Classe Peer
 
 import socket as ss
-import time
+import threading as th
 
-class Peer :
+class Peer (th.Thread) :
 
 	PORT = 4711
 
@@ -15,7 +15,9 @@ class Peer :
 
 	def __init__(self, ip, hash) :
 		""" Constructeur de la classe Peer
-			Prend en paramètres une ip et le hash associé à cette ip """
+			Prend en paramètres une ip et le hash associé à cette ip 
+		"""
+		threading.Thread.__init__(self)
 		self.ip = ip
 		self.hash = hash
 		self.routing = {} # Dictionnaire qui correspond à la table de routage
@@ -76,7 +78,7 @@ class Peer :
 
 	#- thread --------------------------------------------------------------------------------------
 
-	def peer_interaction(self) :
+	def run(self) :
 		""" Permet d'écouter et traiter les requètes """
 		sock = ss.socket()
 		sock.bind( ('', Peer.PORT) )
@@ -111,14 +113,6 @@ class Peer :
 			print("> requête " + request + " traitée\n")
 
 		sock.close()
-
-	def user_interaction(self):
-		""" Permet d'interagir avec le pair et les autres pairs """
-		while True :
-			command = input("command #!> ")
-
-			if command == "msg":
-				self.sendMsg()
 
 	#- request treatment ---------------------------------------------------------------------------
 

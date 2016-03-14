@@ -1,8 +1,8 @@
 # Script creating a peer and joining a network
 
 import socket as ss
-import _thread as th
 from Peer import Peer
+from User_interaction import User_interaction
 
 # Récupération de l'ip de la machine actuel
 ipClient = ss.gethostbyname(ss.gethostname())
@@ -47,8 +47,9 @@ else :
 print("> Pair ajouté au réseau")
 
 # on donne la main au pair
+peer1_user = User_interaction(peer1)
 try:
-   th.start_new_thread( peer1.peer_interaction() )
-   th.start_new_thread( peer1.user_interaction() )
+   peer1.start()
+   peer1_user.start()
 except:
    print("Erreur: impossible de démarer les threads")
