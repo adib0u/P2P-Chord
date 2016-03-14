@@ -129,7 +129,7 @@ class Peer :
 			sock2.sendall(str.encode(hashPeer + "\t" + Peer.REQUEST_SUCC + "\n"))
 				#sock2.sendall(str.encode(hashPeer + "\n"))
 				#sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
-			predecessor = conn.recv(1024).decode()
+			predecessor = sock2.recv(1024).decode()
 			sock2.close()
 			conn.sendall(str.encode(predecessor + "\n"))
 
