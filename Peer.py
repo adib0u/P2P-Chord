@@ -11,6 +11,8 @@ class Peer :
 	REQUEST_ROUTES = "rt?"
 	REQUEST_UPDATE_SUCC = "Je suis ton nouveau successeur"
 
+	DATA_MSG = "msg"
+
 	def __init__(self, ip, hash) :
 		""" Constructeur de la classe Peer
 			Prend en paramètres une ip et le hash associé à cette ip """
@@ -74,7 +76,7 @@ class Peer :
 
 	#- thread --------------------------------------------------------------------------------------
 
-	def run(self) :
+	def peer_interaction(self) :
 		""" Permet d'écouter et traiter les requètes """
 		sock = ss.socket()
 		sock.bind( ('', Peer.PORT) )
@@ -87,7 +89,10 @@ class Peer :
 
 			# 2- si la requête viens d'un pair (et pas du moniteur)
 			if "\t" in request :
-				idPair, request = request.split("\t")
+				request_part = request.split("\t")
+				idPair, request = request_part[0], request_part[1]
+				if len(request_part) > 2 :
+					params = request_part[2:]
 				print("> requête de " + idPair + " à traiter : " + request)
 
 			# 3- switch sur les requêtes
@@ -99,12 +104,21 @@ class Peer :
 
 			elif request == Peer.REQUEST_ROUTES :
 				self.sendRoutes(conn)
+
+			elif request == Peer.DATA_MSG :
+				self.receiveMsg(pair, params[0], params[1])
 			
 			print("> requête " + request + " traitée\n")
 
 		sock.close()
 
-	
+	def user_interaction(self):
+		""" Permet d'interagir avec le pair et les autres pairs """
+		while True :
+			command = input("command #!> ")
+
+			if command == "msg":
+				self.sendMsg()
 
 	#- request treatment ---------------------------------------------------------------------------
 
@@ -136,5 +150,26 @@ class Peer :
 		routes += "end"
 		conn.sendall(str.encode(routes + "\n"))
 
+	def sendMsg(self):
+		dest = input("destinataire #!> ")
+		msg = input("message #!> ")
 
+		sock2 = ss.socket()
+		sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
+		sock2.sendall(str.encode(self.hash + "\t" + Peer.DATA_MSG + "\t" + dest + "\t" + msg + "\n"))
+		sock2.close()
 
+	def receiveMsg(self, exp, dest, msg):
+		if dest == self.hash:
+			print("> msg from " + exp + " : " + msg)
+
+		elif ((self.hash < hashPeer and hashSucc > hashPeer )
+		 or (hashSucc < self.hash and (hashPeer > self.hash or hashPeer < hashSucc)) 
+		 or (self.hash == hashSucc)):
+			print("> msg destroyed")
+
+		else:
+			sock2 = ss.socket()
+			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
+			sock2.sendall(str.encode(exp + "\t" + Peer.DATA_MSG + "\t" + dest + "\t" + msg + "\n"))
+			sock2.close()

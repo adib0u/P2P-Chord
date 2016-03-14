@@ -48,6 +48,7 @@ print("> Pair ajouté au réseau")
 
 # on donne la main au pair
 try:
-   th.start_new_thread( peer1.run() )
+   th.start_new_thread( peer1.peer_interaction() )
+   th.start_new_thread( peer1.user_interaction() )
 except:
    print("Erreur: impossible de démarer les threads")
