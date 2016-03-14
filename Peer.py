@@ -153,14 +153,22 @@ class Peer (th.Thread) :
 		sock2.sendall(str.encode(self.hash + "\t" + Peer.DATA_MSG + "\t" + dest + "\t" + msg + "\n"))
 		sock2.close()
 
+	def sendMsgAuto(self, dest, msg):
+		sock2 = ss.socket()
+		sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
+		sock2.sendall(str.encode(self.hash + "\t" + Peer.DATA_MSG + "\t" + dest + "\t" + msg + "\n"))
+		sock2.close()
+
 	def receiveMsg(self, exp, dest, msg):
 		if dest == self.hash:
 			print("> msg from " + exp + " : " + msg)
+			self.sendMsgAuto(self.hash, exp, "~ roger that ~")
 
 		elif ((self.hash < dest and self.getSuccesseur()[0] > dest )
 		 or (self.getSuccesseur()[0] < self.hash and (dest > self.hash or dest < self.getSuccesseur()[0])) 
 		 or (self.hash == self.getSuccesseur()[0])):
 			print("> msg destroyed")
+			self.sendMsgAuto(self.hash, exp, "~ contact failed ~")
 
 		else:
 			sock2 = ss.socket()
