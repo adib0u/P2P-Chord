@@ -18,7 +18,7 @@ class Peer :
 		self.hash = hash
 		self.routing = {} # Dictionnaire qui correspond à la table de routage
 	
-	#-----------------------------------------------------------------------------------------------
+	#- getter & setter -----------------------------------------------------------------------------
 
 	def getIP(self) :
 		return self.ip
@@ -31,19 +31,18 @@ class Peer :
 	def getRoute(self, hash) :
 		return self.routing[hash]
 
-
 	def getAllRoutes(self) :
 		return self.routing
-
-	def getSuccesseur(self) :
-		return self.routing[self.hash]
-
-	#-----------------------------------------------------------------------------------------------
 
 	def addRoute(self, hash, hashSucc, ipSucc) :
 		""" Permet d'ajouter ou remplacer une route dans la table de routage
 			Route = hash:hash du successeur:ip du successeur """
 		self.routing[hash] = (hashSucc, ipSucc)
+
+	def getSuccesseur(self) :
+		return self.routing[self.hash]
+
+	#- network entry -------------------------------------------------------------------------------
 
 	def enterNetwork(self, partner = "0.0.0.0") :
 		""" Permet d'ajouter un pair dans le réseau """
@@ -77,6 +76,7 @@ class Peer :
 			sock.close()
 			print("> prédécesseur notifié ")
 
+	#- thread --------------------------------------------------------------------------------------
 
 	def run(self) :
 		""" Permet d'écouter et traiter les requètes """
@@ -97,6 +97,7 @@ class Peer :
 				self.whoAreMyNeighbors(idPair, conn)
 
 			elif request == Peer.REQUEST_UPDATE_SUCC :
+				print(addr)
 				self.addRoute(self.hash, idPair, addr[0])
 
 			elif request == Peer.REQUEST_ROUTES :
@@ -106,6 +107,7 @@ class Peer :
 
 		sock.close()
 
+	#- request treatment ---------------------------------------------------------------------------
 
 	def whoAreMyNeighbors(self, hashPeer, conn) :
 		""" """

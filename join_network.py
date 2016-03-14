@@ -50,7 +50,4 @@ print("> Pair ajouté au réseau")
 try:
    th.start_new_thread( peer1.run() )
 except:
-   print("Erreur: impossible de démarer le thread")
-
-while 1:
-   pass
+   print("Erreur: impossible de démarer les threads")
