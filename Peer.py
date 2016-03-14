@@ -54,9 +54,6 @@ class Peer :
 			sock.connect( (partner, Peer.PORT) )
 			# Le pair envoie son hash et demande son successeur
 			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_SUCC + "\n"))
-				# print("> envoi id")
-				# Le pair demande son successeur
-				# sock.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			print("> envoi id + requête : " + Peer.REQUEST_SUCC)
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().rstrip().split("\t")
 			print("> réponse reçue")
@@ -72,7 +69,6 @@ class Peer :
 			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
 			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_UPDATE_SUCC + "\n"))
-				# sock.sendall( str.encode(Peer.REQUEST_UPDATE_SUCC + "\n") )
 			sock.close()
 			print("> prédécesseur notifié ")
 
@@ -86,18 +82,19 @@ class Peer :
 		while True :
 			conn, addr = sock.accept()
 			print("> Connexion établie")
-			# On reçoit l'identifiant du pair concerné et sa requête
+			# 1- On reçoit l'identifiant du pair concerné et sa requête
 			request = conn.recv(1024).decode().rstrip()
 
+			# 2- si la requête viens d'un pair (et pas du moniteur)
 			if "\t" in request :
 				idPair, request = request.split("\t")
 				print("> requête de " + idPair + " à traiter : " + request)
 
+			# 3- switch sur les requêtes
 			if request == Peer.REQUEST_SUCC:
 				self.whoAreMyNeighbors(idPair, conn)
 
 			elif request == Peer.REQUEST_UPDATE_SUCC :
-				print(addr)
 				self.addRoute(self.hash, idPair, addr[0])
 
 			elif request == Peer.REQUEST_ROUTES :
@@ -107,10 +104,11 @@ class Peer :
 
 		sock.close()
 
+	
+
 	#- request treatment ---------------------------------------------------------------------------
 
 	def whoAreMyNeighbors(self, hashPeer, conn) :
-		""" """
 		hashSucc =  self.getSuccesseur()[0]
 		print( self.hash + " < " + hashPeer + " and " + hashSucc + " > " + hashPeer )
 
@@ -127,8 +125,6 @@ class Peer :
 			sock2 = ss.socket()
 			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT) )
 			sock2.sendall(str.encode(hashPeer + "\t" + Peer.REQUEST_SUCC + "\n"))
-				#sock2.sendall(str.encode(hashPeer + "\n"))
-				#sock2.sendall( str.encode(Peer.REQUEST_SUCC + "\n") )
 			predecessor = sock2.recv(1024).decode()
 			sock2.close()
 			conn.sendall(str.encode(predecessor + "\n"))
@@ -138,7 +134,6 @@ class Peer :
 		for k in self.routing :
 			routes += k + ":" + str(self.routing[k][0]) + ":" + str(self.routing[k][1]) + "\n"
 		routes += "end"
-		print (routes)
 		conn.sendall(str.encode(routes + "\n"))
 
 
