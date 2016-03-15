@@ -11,3 +11,6 @@ class User_interaction (th.Thread):
     		command = input("command #!> ")
     		if command == "msg":
     			self.peer.sendMsg()
+    		elif command == "addData" :
+    			self.peer.dataCheck()
+    			

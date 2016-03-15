@@ -12,6 +12,9 @@ class Peer (th.Thread) :
 	REQUEST_UPDATE_SUCC = "Je suis ton nouveau successeur"
 
 	DATA_MSG = "msg"
+	DATA_CHECK = "est-ce que les données appartiennent à ton successeur"
+	DATA_ADD = "tiens ce sont tes données"
+	DATA_GET = "je cherche telles données, tu les as ?"
 
 	def __init__(self, ip, hash) :
 		""" Constructeur de la classe Peer
@@ -21,6 +24,7 @@ class Peer (th.Thread) :
 		self.ip = ip
 		self.hash = hash
 		self.routing = {} # Dictionnaire qui correspond à la table de routage
+		self.datas = {} # Données gérées par le pair
 	
 	#- getter & setter -----------------------------------------------------------------------------
 
@@ -45,6 +49,10 @@ class Peer (th.Thread) :
 
 	def getSuccesseur(self) :
 		return self.routing[self.hash]
+
+	def addData(self, hashData, data) :
+		print("je prends en charge " + hashData + " : " + data )
+		self.datas[hashData] = data
 
 	#- network entry -------------------------------------------------------------------------------
 
@@ -109,6 +117,12 @@ class Peer (th.Thread) :
 
 			elif request == Peer.DATA_MSG :
 				self.receiveMsg(idPair, params[0], params[1])
+
+			elif request == Peer.DATA_CHECK :
+				self.dataCheckAuto(params[0], params[1])
+
+			elif request == Peer.DATA_ADD :
+				self.addData(params[0], params[1])
 			
 			print("> requête " + request + " traitée\n")
 
@@ -162,16 +176,47 @@ class Peer (th.Thread) :
 	def receiveMsg(self, exp, dest, msg):
 		if dest == self.hash:
 			print("> msg from " + exp + " : " + msg)
-			self.sendMsgAuto(self.hash, exp, "~ roger that ~")
+			if msg != "~ roger that ~" :
+				self.sendMsgAuto(exp, "~ roger that ~")
 
 		elif ((self.hash < dest and self.getSuccesseur()[0] > dest )
 		 or (self.getSuccesseur()[0] < self.hash and (dest > self.hash or dest < self.getSuccesseur()[0])) 
 		 or (self.hash == self.getSuccesseur()[0])):
 			print("> msg destroyed")
-			self.sendMsgAuto(self.hash, exp, "~ contact failed ~")
+			self.sendMsgAuto(exp, "~ contact failed ~")
 
 		else:
 			sock2 = ss.socket()
 			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
 			sock2.sendall(str.encode(exp + "\t" + Peer.DATA_MSG + "\t" + dest + "\t" + msg + "\n"))
+			sock2.close()
+
+	def dataCheck(self) :
+		data = input("donnée #!> ")
+
+		# On demande le hash de la donnée au HashServer
+		ipHashServeur = input("Saisir ip du serveur de hash #!> ")
+		sock = ss.socket()
+		sock.connect( (ipHashServeur, 8001) )
+		sock.send( str.encode(data + "\n") )
+		hashData = sock.recv( 1024 ).decode().rstrip()
+		sock.close()
+
+		self.dataCheckAuto(hashData, data)
+
+
+	def dataCheckAuto(self, hashData, data):
+		# On regarde si la donnée appartient à notre successeur
+		if ((self.hash < hashData and self.getSuccesseur()[0] > hashData )
+		 or (self.getSuccesseur()[0] < self.hash and (hashData > self.hash or hashData < self.getSuccesseur()[0])) 
+		 or (self.hash == self.getSuccesseur()[0])):
+			sock2 = ss.socket()
+			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
+			sock2.sendall(str.encode(self.hash + "\t" + Peer.DATA_ADD + "\t" + hashData + "\t" + data + "\n"))
+			sock2.close()
+
+		else :
+			sock2 = ss.socket()
+			sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
+			sock2.sendall(str.encode(self.hash + "\t" + Peer.DATA_CHECK + "\t" + hashData + "\t" + data + "\n"))
 			sock2.close()
