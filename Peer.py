@@ -10,6 +10,7 @@ class Peer (th.Thread) :
 	REQUEST_SUCC = "Qui est mon successeur ?"
 	REQUEST_ROUTES = "rt?"
 	REQUEST_UPDATE_SUCC = "Je suis ton nouveau successeur"
+	REQUEST_DATA_RELOCATE = "envoi le matos"
 
 	DATA_MSG = "msg"
 	DATA_ADD_CHECK = "est-ce que les données appartiennent à ton successeur"
@@ -50,7 +51,7 @@ class Peer (th.Thread) :
 		return self.routing[self.hash]
 
 	def addData(self, hashData, data) :
-		print("je prends en charge " + hashData + " : " + data )
+		print("> donnée prise en charge : " + hashData + " : " + data )
 		self.datas[hashData] = data
 
 	#- network entry -------------------------------------------------------------------------------
@@ -65,23 +66,29 @@ class Peer (th.Thread) :
 			sock.connect( (partner, Peer.PORT) )
 			# Le pair envoie son hash et demande son successeur
 			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_SUCC + "\n"))
-			print("> envoi id + requête : " + Peer.REQUEST_SUCC)
+			# print("> envoi id + requête : " + Peer.REQUEST_SUCC)
 			pred_hash, pred_ip, succ_hash, succ_ip = sock.recv(1024).decode().rstrip().split("\t")
-			print("> réponse reçue")
-			print("- " + pred_hash)
-			print("- " + pred_ip)
-			print("- " + succ_hash)
-			print("- " + succ_ip )
+			# print("> réponse reçue")
+			# print("- " + pred_hash)
+			# print("- " + pred_ip)
+			# print("- " + succ_hash)
+			# print("- " + succ_ip )
 			sock.close()
 			# Il ajoute la route vers son successeur
 			self.addRoute(self.hash, succ_hash, succ_ip)
-			print("> successeur ajouté")
-			# Il informe son prédécesseur qu'il est son nouveau successeur
+			# print("> successeur ajouté")
+			# Il informe son prédécesseur qu'il doit mettre à jour sa table de routage
 			sock = ss.socket()
 			sock.connect( (pred_ip, Peer.PORT) )
 			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_UPDATE_SUCC + "\n"))
 			sock.close()
-			print("> prédécesseur notifié ")
+			# print("> prédécesseur notifié ")
+			# Il informe son successeur qu'il doit lacher certaines données
+			sock = ss.socket()
+			sock.connect( (succ_ip, Peer.PORT) )
+			sock.sendall(str.encode(self.hash + "\t" + Peer.REQUEST_DATA_RELOCATE + "\n"))
+			sock.close()
+			# print("> successeur notifié ")
 
 	#- thread --------------------------------------------------------------------------------------
 
@@ -92,7 +99,7 @@ class Peer (th.Thread) :
 		sock.listen(1)
 		while True :
 			conn, addr = sock.accept()
-			print("> Connexion établie")
+			# print("> Connexion établie")
 			# 1- On reçoit l'identifiant du pair concerné et sa requête
 			request = conn.recv(1024).decode().rstrip()
 
@@ -102,7 +109,7 @@ class Peer (th.Thread) :
 				idPair, request = request_part[0], request_part[1]
 				if len(request_part) > 2 :
 					params = request_part[2:]
-				print("> requête de " + idPair + " à traiter : " + request)
+				# print("> requête de " + idPair + " à traiter : " + request)
 
 			# 3- switch sur les requêtes
 			if request == Peer.REQUEST_SUCC:
@@ -110,6 +117,10 @@ class Peer (th.Thread) :
 
 			elif request == Peer.REQUEST_UPDATE_SUCC :
 				self.addRoute(self.hash, idPair, addr[0])
+
+			elif request == Peer.REQUEST_DATA_RELOCATE :
+				conn.close()
+				self.dataRelocate(idPair)
 
 			elif request == Peer.REQUEST_ROUTES :
 				self.sendRoutes(conn)
@@ -129,19 +140,15 @@ class Peer (th.Thread) :
 			elif request == Peer.DATA_GET :
 				self.sendData(idPair, params[0])
 			
-			print("> requête " + request + " traitée\n")
+			# print("> requête " + request + " traitée\n")
 
 		sock.close()
 
 	#- request treatment ---------------------------------------------------------------------------
 
-	#-----------------------#
-	# Entrée dans le réseau #
-	#-----------------------#
-
 	def whoAreMyNeighbors(self, hashPeer, conn) :
 		hashSucc =  self.getSuccesseur()[0]
-		print( self.hash + " < " + hashPeer + " and " + hashSucc + " > " + hashPeer )
+		# print( self.hash + " < " + hashPeer + " and " + hashSucc + " > " + hashPeer )
 
 		if ((self.hash < hashPeer and hashSucc > hashPeer )
 		 or (hashSucc < self.hash and (hashPeer > self.hash or hashPeer < hashSucc)) 
@@ -167,13 +174,18 @@ class Peer (th.Thread) :
 		routes += "end"
 		conn.sendall(str.encode(routes + "\n"))
 
+	def dataRelocate(self, idPair) :
+		for d in self.datas :
+			if (d < idPair) or (d > self.hash) :
+				self.dataCheckAuto(d, self.datas[d])
+
 	#------------------#
 	# Envoi de message #
 	#------------------#
 
 	def sendMsg(self):
-		dest = input("destinataire #!> ")
-		msg = input("message #!> ")
+		dest = input("+ destinataire #!> ")
+		msg = input("+ message #!> ")
 
 		sock2 = ss.socket()
 		sock2.connect( (str(self.getSuccesseur()[1]), Peer.PORT ) )
@@ -193,7 +205,7 @@ class Peer (th.Thread) :
 	def receiveMsg(self, exp, dest, msg):
 		# si le message nous est destiné on l'affiche
 		if dest == self.hash:
-			print("> msg from " + exp + " : " + msg)
+			print("\u001B[34m" + "- " + exp + " : " + msg + "\u001B[0m")
 			# if msg != "~ roger that ~" and msg != "~ contact failed ~" :
 			# 	self.sendMsgAuto(exp, "~ roger that ~")
 
@@ -215,10 +227,10 @@ class Peer (th.Thread) :
 	#------------------#
 
 	def dataCheck(self) :
-		data = input("donnée #!> ")
+		data = input("+ donnée #!> ")
 
 		# On demande le hash de la donnée au HashServer
-		ipHashServeur = input("Saisir ip du serveur de hash #!> ")
+		ipHashServeur = input("+ Saisir ip du serveur de hash #!> ")
 		sock = ss.socket()
 		sock.connect( (ipHashServeur, 8001) )
 		sock.send( str.encode(data + "\n") )
@@ -250,7 +262,7 @@ class Peer (th.Thread) :
 	#-------------------#
 
 	def getData(self):
-		hashData = input("id de la donnée #!> ")
+		hashData = input("+ id de la donnée #!> ")
 		self.getDataAuto(self.hash, hashData)
 
 	def getDataAuto(self, exp, hashData):
