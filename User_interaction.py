@@ -13,4 +13,6 @@ class User_interaction (th.Thread):
     			self.peer.sendMsg()
     		elif command == "addData" :
     			self.peer.dataCheck()
+    		elif command == "getData" :
+    			self.peer.getData()
     			

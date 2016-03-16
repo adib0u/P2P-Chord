@@ -10,11 +10,11 @@ print("> IP client : " + ipClient)
 
 # Demande de hash au HashServer
 
-print("Saisir ip du serveur de hash")
-ipHashServeur = input()
+print("Saisir ip du serveur de hash et d'accueil")
+ipServeur = input()
 
 sock = ss.socket()
-sock.connect( (ipHashServeur, 8001) )
+sock.connect( (ipServeur, 8001) )
 sock.send( str.encode(ipClient + "\n") )
 hashClient = sock.recv( 1024 ).decode()
 hashClient = hashClient[:-1]
@@ -27,11 +27,8 @@ print("> Hash client : " + hashClient)
 
 peer1 = Peer( ipClient, hashClient)
 
-print("Saisir ip du serveur d'acceuil")
-ipWelcomeServeur = input()
-
 sock = ss.socket()
-sock.connect( (ipWelcomeServeur, 8000) )
+sock.connect( (ipServeur, 8000) )
 print("yo:" + hashClient + ":" + ipClient + "\n")
 sock.send( str.encode("yo:" + hashClient + ":" + ipClient + "\n") )
 welcomeAnswer = sock.recv(1024).decode()
