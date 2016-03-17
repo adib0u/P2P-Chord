@@ -238,6 +238,7 @@ class Peer (th.Thread) :
 		sock.close()
 
 		self.dataCheckAuto(hashData, data)
+		print("+ Donnée ajoutée")
 
 
 	def dataCheckAuto(self, hashData, data):
